@@ -1,57 +1,230 @@
 
 import { optimizeRepairs } from "./optimizer.js";
+import {
+  LOCATIONS,
+  REPAIR_COSTS,
+  PATHS
+} from "./data.js";
 
-console.log("=== BARRIERSHIFT OPTIMIZATION ===");
+/* ========================================
+   BARRIERSHIFT - DASHBOARD CONTROLLER
+======================================== */
 
-// Verified reference scenarios
-const tests = [
-  { budget: 0, repairs: [], score: 2 },
-  { budget: 4, repairs: ["R3"], score: 7 },
-  { budget: 5, repairs: ["R3"], score: 7 },
-  { budget: 6, repairs: ["R1", "R2"], score: 22 },
-  { budget: 7, repairs: ["R1", "R2"], score: 22 },
-  { budget: 10, repairs: ["R1", "R2", "R3"], score: 27 }
-];
+// 1. Get HTML elements
 
-for (const test of tests) {
+const budgetRange = document.getElementById("budgetRange");
+const budgetNumber = document.getElementById("budgetNumber");
+const budgetOutput = document.getElementById("budgetOutput");
+const optimizationForm = document.getElementById("optimizationForm");
 
-  const result = optimizeRepairs(test.budget);
+const baselineScore = document.getElementById("baselineScore");
+const optimizedScore = document.getElementById("optimizedScore");
+const scoreGain = document.getElementById("scoreGain");
+const repairCost = document.getElementById("repairCost");
 
-  console.log(`Budget ${test.budget}:`, result);
+const selectedRepairs = document.getElementById("selectedRepairs");
+const feasibleCount = document.getElementById("feasibleCount");
+const journeyResults = document.getElementById("journeyResults");
+const whyThisWins = document.getElementById("whyThisWins");
+const appStatus = document.getElementById("appStatus");
 
-  // Verify optimal score
-  if (result.score !== test.score) {
-    throw new Error(
-      `Score mismatch at budget ${test.budget}`
-    );
+
+// 2. Create HTML elements safely
+
+function createElement(tag, text, className = "") {
+  const element = document.createElement(tag);
+  element.textContent = text;
+
+  if (className) {
+    element.className = className;
   }
 
-  // Verify selected repairs
-  if (
-    result.repairs.join(",") !==
-    test.repairs.join(",")
-  ) {
-    throw new Error(
-      `Repair mismatch at budget ${test.budget}`
+  return element;
+}
+
+
+// 3. Display recommended repairs
+
+function renderRepairs(repairs) {
+  selectedRepairs.replaceChildren();
+
+  if (repairs.length === 0) {
+    selectedRepairs.append(
+      createElement("p", "No repairs required for this budget.")
     );
+    return;
+  }
+
+  for (const repairId of repairs) {
+    const path = PATHS.find(p => p.repairId === repairId);
+
+    const card = createElement("div", "", "repair-card");
+
+    const label = createElement(
+      "strong",
+      `${repairId}: ${path.from} – ${path.to}`
+    );
+
+    const cost = createElement(
+      "span",
+      `${REPAIR_COSTS[repairId]} units`
+    );
+
+    card.append(label, cost);
+    selectedRepairs.append(card);
   }
 }
 
-// Verify number of affordable combinations
-if (optimizeRepairs(6).feasibleCount !== 9) {
-  throw new Error("Feasible combination count incorrect");
+
+// 4. Display priority journey results
+
+function renderJourneys(journeys) {
+  journeyResults.replaceChildren();
+
+  for (const journey of journeys) {
+    const row = document.createElement("tr");
+
+    const route = createElement(
+      "td",
+      `${LOCATIONS[journey.from]} → ${LOCATIONS[journey.to]}`
+    );
+
+    const weight = createElement("td", journey.weight);
+
+    const statusCell = document.createElement("td");
+
+    const status = createElement(
+      "span",
+      journey.reachable ? "Reachable" : "Blocked",
+      journey.reachable
+        ? "status-reachable"
+        : "status-blocked"
+    );
+
+    statusCell.append(status);
+    row.append(route, weight, statusCell);
+    journeyResults.append(row);
+  }
 }
 
-console.log("All optimization tests passed!");
 
-// Display final demonstration result
-const finalResult = optimizeRepairs(6);
+// 5. Explain the optimization result
 
-console.log("=== FINAL RESULT ===");
-console.log("Selected Repairs:", finalResult.repairs);
-console.log("Total Cost:", finalResult.cost);
-console.log("Accessibility Score:", finalResult.score);
-console.log("Score Gain:", finalResult.gain);
-console.log("Feasible Sets:", finalResult.feasibleCount);
+function renderExplanation(result) {
+  whyThisWins.replaceChildren();
 
-console.table(finalResult.journeyResults);
+  const repairNames = result.repairs.length
+    ? result.repairs.join(" + ")
+    : "No repairs";
+
+  const summary = createElement(
+    "p",
+    `${repairNames} was selected after evaluating ${result.feasibleCount} affordable combinations.`
+  );
+
+  const improvement = createElement(
+    "p",
+    `The weighted accessibility score increased from ${result.baselineScore} to ${result.score}, a gain of ${result.gain} points.`
+  );
+
+  const cost = createElement(
+    "p",
+    `Total repair cost: ${result.cost} out of ${result.budget} available units.`
+  );
+
+  const details = createElement(
+    "p",
+    "The optimizer maximizes weighted journey reachability, then prefers lower-cost solutions. Path distances are not included in the current score."
+  );
+
+  whyThisWins.append(
+    summary,
+    improvement,
+    cost,
+    details
+  );
+}
+
+
+// 6. Update dashboard
+
+function updateDashboard(budget) {
+  try {
+    const result = optimizeRepairs(budget);
+
+    baselineScore.textContent = result.baselineScore;
+    optimizedScore.textContent = result.score;
+    scoreGain.textContent = `+${result.gain}`;
+    repairCost.textContent = result.cost;
+    feasibleCount.textContent = result.feasibleCount;
+
+    renderRepairs(result.repairs);
+    renderJourneys(result.journeyResults);
+    renderExplanation(result);
+
+    appStatus.textContent =
+      `Optimization successful for budget ${budget}.`;
+
+  } catch (error) {
+    appStatus.textContent = `Error: ${error.message}`;
+    console.error(error);
+  }
+}
+
+
+// 7. Validate budget
+
+function applyBudget(value) {
+  if (value === "") {
+    appStatus.textContent = "Please enter a budget.";
+    return;
+  }
+
+  const budget = Number(value);
+
+  if (!Number.isInteger(budget) || budget < 0) {
+    appStatus.textContent =
+      "Budget must be a non-negative whole number.";
+    return;
+  }
+
+  budgetOutput.textContent = `${budget} units`;
+
+  // Slider displays values up to its maximum.
+  budgetRange.value = Math.min(
+    budget,
+    Number(budgetRange.max)
+  );
+
+  updateDashboard(budget);
+}
+
+
+// 8. Handle slider changes
+
+budgetRange.addEventListener("input", () => {
+  budgetNumber.value = budgetRange.value;
+  applyBudget(budgetRange.value);
+});
+
+
+// 9. Handle numeric budget changes
+
+budgetNumber.addEventListener("input", () => {
+  applyBudget(budgetNumber.value);
+});
+
+
+// 10. Handle Optimize button
+
+optimizationForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  applyBudget(budgetNumber.value);
+});
+
+
+// 11. Initialize dashboard
+
+applyBudget(budgetNumber.value);
+
+console.log("BarrierShift dashboard connected!");
