@@ -107,3 +107,27 @@ SRM Institute of Science and Technology
 
 Beyond Hack 2.0  
 Campus Innovation & Student Life
+
+---
+
+## Live Demo
+
+[Launch BarrierShift](https://step-7exx.vercel.app)
+
+## GitHub Repository
+
+https://github.com/anshika8r/STEP
+
+## Deployment
+
+- Platform: Vercel
+- Frontend: HTML5, CSS3, JavaScript
+- Visualization: SVG
+- Backend: Not required
+
+## Project Status
+
+Working educational prototype with automated
+algorithm tests and manual repair simulation.
+
+The dataset and repair costs are simulated.
