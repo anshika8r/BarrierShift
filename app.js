@@ -1,21 +1,28 @@
 
-import {
-  LOCATIONS,
-  PATHS,
-  REPAIR_COSTS,
-  JOURNEYS
-} from "./data.js";
+import { buildGraph } from "./graph.js";
 
-console.log("BarrierShift initialized successfully!");
+// Test 1: Original campus graph
+const baselineGraph = buildGraph([]);
 
-console.log("Locations:", Object.keys(LOCATIONS).length);
-console.log("Pathways:", PATHS.length);
-console.log("Repairs:", Object.keys(REPAIR_COSTS).length);
-console.log("Priority Journeys:", JOURNEYS.length);
+console.log("=== BASELINE GRAPH ===");
+console.log(baselineGraph);
 
-console.log("Campus dataset loaded:", {
-  LOCATIONS,
-  PATHS,
-  REPAIR_COSTS,
-  JOURNEYS
-});
+// Test 2: Activate R1 and R3
+const repairedGraph = buildGraph(["R1", "R3"]);
+
+console.log("=== REPAIRED GRAPH ===");
+console.log(repairedGraph);
+
+// Check specific connections
+console.log("Baseline J:", baselineGraph.J);
+console.log("Repaired J:", repairedGraph.J);
+
+// Automatic verification
+if (
+  baselineGraph.J.join(",") !== "H,C" ||
+  repairedGraph.J.join(",") !== "H,C,K,M"
+) {
+  throw new Error("Graph builder test failed");
+}
+
+console.log("Graph builder tests passed!");
