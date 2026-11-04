@@ -1,26 +1,600 @@
 
+/* ========================================
+   BARRIERSHIFT — DASHBOARD DESIGN
+======================================== */
+
+/* 1. GLOBAL DESIGN */
+
+:root {
+  --bg: #080f1e;
+  --surface: #111d30;
+  --surface-light: #1a2b41;
+  --border: #293c53;
+
+  --primary: #42dfb5;
+  --primary-dark: #0d6254;
+
+  --text: #f1f5f9;
+  --muted: #a9b8c8;
+
+  --danger: #fb7185;
+  --warning: #fbbf24;
+  --success: #42dfb5;
+
+  --radius: 16px;
+}
+
 * {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #08111f;
-  color: #f2f7fb;
+  min-height: 100vh;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(
+      circle at top right,
+      #123d45 0%,
+      transparent 35%
+    ),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.6;
 }
 
-header {
+/* 2. HEADER */
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  padding: 22px 6%;
+
+  background: rgba(17, 29, 48, 0.9);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand h1 {
+  font-size: 27px;
+  color: var(--primary);
+  letter-spacing: -1px;
+}
+
+.brand p {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.header-tag {
+  padding: 8px 16px;
+  border: 1px solid var(--primary-dark);
+  border-radius: 30px;
+
+  background: rgba(66, 223, 181, 0.08);
+  color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 3. DASHBOARD LAYOUT */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  gap: 24px;
+
+  max-width: 1400px;
+  margin: auto;
+  padding: 35px 5%;
+}
+
+.hero,
+.map-panel,
+.dashboard > .panel:not(.controls-panel),
+#appStatus {
+  grid-column: 1 / -1;
+}
+
+/* 4. HERO SECTION */
+
+.hero {
+  padding: 45px;
+  border: 1px solid #236158;
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      120deg,
+      #123f42,
+      #102338 70%,
+      #152b3b
+    );
+}
+
+.eyebrow {
+  margin-bottom: 12px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.hero h2 {
+  font-size: clamp(32px, 4vw, 50px);
+  letter-spacing: -1.5px;
+  line-height: 1.2;
+}
+
+.hero > p:last-child {
+  max-width: 650px;
+  margin-top: 15px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* 5. PANELS */
+
+.panel {
+  min-width: 0;
+  padding: 26px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+.panel h2 {
+  margin-bottom: 15px;
+  font-size: 21px;
+  letter-spacing: -0.5px;
+}
+
+.panel > p {
+  margin-bottom: 15px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* 6. BUDGET CONTROLS */
+
+.controls-panel {
+  grid-column: 1;
+}
+
+#optimizationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#optimizationForm label {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#budgetOutput {
+  display: block;
+  width: fit-content;
+
+  padding: 8px 14px;
+  border-radius: 9px;
+
+  background: rgba(66, 223, 181, 0.12);
+  color: var(--primary);
+
+  font-size: 22px;
+  font-weight: 800;
+}
+
+#budgetRange {
+  width: 100%;
+  margin: 12px 0;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+#budgetNumber {
+  width: 100%;
+  padding: 13px;
+
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  color: var(--text);
+  font-size: 15px;
+}
+
+#budgetNumber:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* 7. OPTIMIZE BUTTON */
+
+#optimizeButton {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: var(--primary);
+  color: #062b26;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+#optimizeButton:hover {
+  background: #77f4d4;
+  transform: translateY(-2px);
+}
+
+#optimizeButton:active {
+  transform: translateY(0);
+}
+
+#optimizeButton:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
+/* 8. STATISTICS GRID */
+
+.stats-grid {
+  grid-column: 2;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  min-width: 0;
   padding: 24px;
-  background: #14263b;
-  border-bottom: 2px solid #43dfbb;
+
+  background: linear-gradient(
+    145deg,
+    #192c43,
+    #111d30
+  );
+
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  transition: border-color 0.2s, transform 0.2s;
 }
 
-h1 {
-  margin: 0;
-  color: #43dfbb;
+.stat-card:hover {
+  border-color: var(--primary-dark);
+  transform: translateY(-3px);
 }
 
-main {
-  padding: 32px;
+.stat-card h3 {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stat-card p {
+  margin: 12px 0 4px;
+
+  color: var(--primary);
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.stat-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 9. CAMPUS NETWORK */
+
+.map-container {
+  min-height: 350px;
+  margin-top: 20px;
+
+  overflow: hidden;
+
+  background-color: #091827;
+  background-image:
+    radial-gradient(
+      #294154 1px,
+      transparent 1px
+    );
+
+  background-size: 22px 22px;
+
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+#campusMap {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 350px;
+}
+
+/* SVG elements added in Step 12 */
+
+#pathLayer line {
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+#nodeLayer circle {
+  stroke-width: 2;
+}
+
+#nodeLayer text {
+  font-family: inherit;
+}
+
+/* 10. MAP LEGEND */
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 17px;
+}
+
+.map-legend span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.map-legend span:nth-child(1)::before {
+  content: "● ";
+  color: #60a5fa;
+}
+
+.map-legend span:nth-child(2)::before {
+  content: "● ";
+  color: var(--danger);
+}
+
+.map-legend span:nth-child(3)::before {
+  content: "● ";
+  color: var(--success);
+}
+
+/* 11. REPAIR RECOMMENDATIONS */
+
+#selectedRepairs {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+#selectedRepairs p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.repair-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+
+  padding: 16px;
+
+  background: rgba(66, 223, 181, 0.08);
+  border: 1px solid var(--primary-dark);
+  border-radius: 11px;
+}
+
+.repair-card strong {
+  color: var(--primary);
+}
+
+/* 12. JOURNEY TABLE */
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  margin-top: 10px;
+
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 14px;
+
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+th {
+  background: var(--surface-light);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+td {
+  color: var(--text);
+}
+
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.status-reachable {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.status-blocked {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+/* 13. OPTIMIZATION EXPLANATION */
+
+.explanation-panel {
+  border-left: 3px solid var(--primary);
+}
+
+#whyThisWins {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+#whyThisWins p {
+  margin-bottom: 10px;
+}
+
+#whyThisWins strong {
+  color: var(--text);
+}
+
+/* 14. APPLICATION STATUS */
+
+#appStatus {
+  padding: 14px 18px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 15. FOOTER */
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+
+  padding: 25px 6%;
+
+  border-top: 1px solid var(--border);
+
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 16. TABLETS */
+
+@media (max-width: 900px) {
+
+  .dashboard {
+    grid-template-columns: 1fr;
+    padding: 25px 4%;
+  }
+
+  .hero,
+  .controls-panel,
+  .stats-grid,
+  .map-panel,
+  .dashboard > .panel,
+  #appStatus {
+    grid-column: 1;
+  }
+
+  .hero {
+    padding: 30px;
+  }
+}
+
+/* 17. MOBILE */
+
+@media (max-width: 550px) {
+
+  .site-header {
+    padding: 18px;
+  }
+
+  .brand h1 {
+    font-size: 23px;
+  }
+
+  .header-tag {
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+
+  .dashboard {
+    padding: 18px 14px;
+    gap: 16px;
+  }
+
+  .hero {
+    padding: 25px;
+  }
+
+  .hero h2 {
+    font-size: 32px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 15px;
+  }
+
+  .stat-card p {
+    font-size: 29px;
+  }
+
+  .map-container,
+  #campusMap {
+    min-height: 220px;
+  }
+
+  .map-legend {
+    gap: 10px;
+  }
+
+  .site-footer {
+    padding: 20px;
+  }
+}
+
+/* 18. ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
