@@ -1,4 +1,4 @@
-
+import { drawCampusGraph } from "./map.js";
 import { optimizeRepairs } from "./optimizer.js";
 import {
   LOCATIONS,
@@ -161,6 +161,9 @@ function updateDashboard(budget) {
     renderRepairs(result.repairs);
     renderJourneys(result.journeyResults);
     renderExplanation(result);
+
+    // NEW: Update campus map
+    drawCampusGraph(result.repairs);
 
     appStatus.textContent =
       `Optimization successful for budget ${budget}.`;
