@@ -31,3 +31,55 @@ export function buildGraph(selectedRepairs = []) {
 
   return graph;
 }
+
+
+/* ========================================
+   BFS REACHABILITY ENGINE
+======================================== */
+
+export function isReachable(graph, start, destination) {
+
+  // Validate locations
+  if (
+    !Object.hasOwn(graph, start) ||
+    !Object.hasOwn(graph, destination)
+  ) {
+    throw new Error("Invalid campus location");
+  }
+
+  // Initialize BFS queue
+  const queue = [start];
+
+  // Track discovered locations
+  const visited = new Set([start]);
+
+  // Continue until queue becomes empty
+  while (queue.length > 0) {
+
+    // Remove first location from queue
+    const current = queue.shift();
+
+    // Destination found
+    if (current === destination) {
+      return true;
+    }
+
+    // Explore directly connected locations
+    for (const neighbor of graph[current]) {
+
+      // Skip previously discovered locations
+      if (visited.has(neighbor)) {
+        continue;
+      }
+
+      // Mark location as discovered
+      visited.add(neighbor);
+
+      // Add location to exploration queue
+      queue.push(neighbor);
+    }
+  }
+
+  // No usable path exists
+  return false;
+}
