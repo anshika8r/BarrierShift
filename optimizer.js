@@ -1,4 +1,5 @@
-
+import { buildGraph } from "./graph.js";
+import { scoreGraph } from "./scoring.js";
 import { REPAIR_COSTS } from "./data.js";
 
 /* ========================================
@@ -83,4 +84,82 @@ export function getAffordableRepairSets(budget) {
   }
 
   return affordableSets;
+}
+
+/* ========================================
+   COMPARE OPTIMIZATION RESULTS
+======================================== */
+
+function isBetter(candidate, best) {
+
+  // First valid candidate wins
+  if (best === null) {
+    return true;
+  }
+
+  // Rule 1: Higher accessibility score wins
+  if (candidate.score !== best.score) {
+    return candidate.score > best.score;
+  }
+
+  // Rule 2: If scores tie, lower cost wins
+  if (candidate.cost !== best.cost) {
+    return candidate.cost < best.cost;
+  }
+
+  // Rule 3: Deterministic repair ID ordering
+  return (
+    candidate.repairs.join(",") <
+    best.repairs.join(",")
+  );
+}
+
+
+/* ========================================
+   COMPLETE OPTIMIZATION ENGINE
+======================================== */
+
+export function optimizeRepairs(budget) {
+
+  // Calculate original campus score
+  const baselineScore = scoreGraph(
+    buildGraph([])
+  ).score;
+
+  // Generate all affordable combinations
+  const affordableSets = getAffordableRepairSets(budget);
+
+  let best = null;
+
+  // Evaluate every affordable combination
+  for (const item of affordableSets) {
+
+    // Build graph with selected repairs
+    const graph = buildGraph(item.repairs);
+
+    // Calculate weighted accessibility score
+    const result = scoreGraph(graph);
+
+    // Store candidate result
+    const candidate = {
+      repairs: item.repairs,
+      cost: item.cost,
+      score: result.score,
+      gain: result.score - baselineScore,
+      journeyResults: result.journeyResults
+    };
+
+    // Select better combination
+    if (isBetter(candidate, best)) {
+      best = candidate;
+    }
+  }
+
+  // Return optimal solution
+  return {
+    budget,
+    baselineScore,
+    feasibleCount: affordableSets.length,
+    ...best
+  };
 }

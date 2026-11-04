@@ -1,50 +1,57 @@
 
-import {
-  generateRepairSets,
-  getRepairCost,
-  getAffordableRepairSets
-} from "./optimizer.js";
+import { optimizeRepairs } from "./optimizer.js";
 
-console.log("=== BUDGET OPTIMIZATION TESTS ===");
+console.log("=== BARRIERSHIFT OPTIMIZATION ===");
 
-// Test individual costs
-console.log("R1 + R2:", getRepairCost(["R1", "R2"]));
-console.log("R4 + R5:", getRepairCost(["R4", "R5"]));
+// Verified reference scenarios
+const tests = [
+  { budget: 0, repairs: [], score: 2 },
+  { budget: 4, repairs: ["R3"], score: 7 },
+  { budget: 5, repairs: ["R3"], score: 7 },
+  { budget: 6, repairs: ["R1", "R2"], score: 22 },
+  { budget: 7, repairs: ["R1", "R2"], score: 22 },
+  { budget: 10, repairs: ["R1", "R2", "R3"], score: 27 }
+];
 
-// Generate all combinations
-console.log("Total combinations:", generateRepairSets().length);
+for (const test of tests) {
 
-// Filter combinations under budget 6
-const affordable = getAffordableRepairSets(6);
+  const result = optimizeRepairs(test.budget);
 
-console.log("Affordable combinations:", affordable.length);
+  console.log(`Budget ${test.budget}:`, result);
 
-console.table(
-  affordable.map(item => ({
-    repairs: item.repairs.join(" + ") || "None",
-    cost: item.cost
-  }))
-);
+  // Verify optimal score
+  if (result.score !== test.score) {
+    throw new Error(
+      `Score mismatch at budget ${test.budget}`
+    );
+  }
 
-// Automated tests
-if (getRepairCost(["R1", "R2"]) !== 6) {
-  throw new Error("R1 + R2 cost test failed");
+  // Verify selected repairs
+  if (
+    result.repairs.join(",") !==
+    test.repairs.join(",")
+  ) {
+    throw new Error(
+      `Repair mismatch at budget ${test.budget}`
+    );
+  }
 }
 
-if (getRepairCost(["R4", "R5"]) !== 8) {
-  throw new Error("R4 + R5 cost test failed");
+// Verify number of affordable combinations
+if (optimizeRepairs(6).feasibleCount !== 9) {
+  throw new Error("Feasible combination count incorrect");
 }
 
-if (affordable.length !== 9) {
-  throw new Error("Expected 9 affordable repair sets");
-}
+console.log("All optimization tests passed!");
 
-if (affordable.some(item => item.cost > 6)) {
-  throw new Error("Over-budget combination detected");
-}
+// Display final demonstration result
+const finalResult = optimizeRepairs(6);
 
-if (getAffordableRepairSets(0).length !== 1) {
-  throw new Error("Budget zero test failed");
-}
+console.log("=== FINAL RESULT ===");
+console.log("Selected Repairs:", finalResult.repairs);
+console.log("Total Cost:", finalResult.cost);
+console.log("Accessibility Score:", finalResult.score);
+console.log("Score Gain:", finalResult.gain);
+console.log("Feasible Sets:", finalResult.feasibleCount);
 
-console.log("All budget constraint tests passed!");
+console.table(finalResult.journeyResults);
