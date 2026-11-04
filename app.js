@@ -1,5 +1,12 @@
 import { drawCampusGraph } from "./map.js";
-import { optimizeRepairs } from "./optimizer.js";
+import {
+  optimizeRepairs,
+  getRepairCost,
+  getAffordableRepairSets
+} from "./optimizer.js";
+
+import { buildGraph } from "./graph.js";
+import { scoreGraph } from "./scoring.js";
 import {
   LOCATIONS,
   REPAIR_COSTS,
@@ -27,6 +34,22 @@ const feasibleCount = document.getElementById("feasibleCount");
 const journeyResults = document.getElementById("journeyResults");
 const whyThisWins = document.getElementById("whyThisWins");
 const appStatus = document.getElementById("appStatus");
+
+const simulationMode =
+  document.getElementById("simulationMode");
+
+const manualRepairControls =
+  document.getElementById("manualRepairControls");
+
+const repairSectionTitle =
+  document.getElementById("repairSectionTitle");
+
+const explanationTitle =
+  document.getElementById("explanationTitle");
+
+const repairCheckboxes =
+  document.querySelectorAll('input[name="manualRepair"]');
+
 
 
 // 2. Create HTML elements safely
@@ -146,27 +169,144 @@ function renderExplanation(result) {
 }
 
 
-// 6. Update dashboard
+/* ========================================
+   MANUAL REPAIR SIMULATION ENGINE
+======================================== */
+
+function getManualResult(budget) {
+
+  // Read checked repairs
+  const repairs = [...repairCheckboxes]
+    .filter(checkbox => checkbox.checked)
+    .map(checkbox => checkbox.value);
+
+  // Build graph using manually selected repairs
+  const graph = buildGraph(repairs);
+
+  // Calculate accessibility score
+  const result = scoreGraph(graph);
+
+  // Calculate original campus score
+  const baseline = scoreGraph(buildGraph([])).score;
+
+  // Calculate selected repair cost
+  const cost = getRepairCost(repairs);
+
+  return {
+    budget,
+    repairs,
+    cost,
+    baselineScore: baseline,
+    score: result.score,
+    gain: result.score - baseline,
+    journeyResults: result.journeyResults,
+    feasibleCount: getAffordableRepairSets(budget).length
+  };
+}
+
+
+/* ========================================
+   EXPLAIN MANUAL SCENARIO
+======================================== */
+
+function renderManualExplanation(result) {
+
+  whyThisWins.replaceChildren();
+
+  const repairNames = result.repairs.length
+    ? result.repairs.join(" + ")
+    : "None";
+
+  const summary = createElement(
+    "p",
+    `Manually selected repairs: ${repairNames}.`
+  );
+
+  const impact = createElement(
+    "p",
+    `Accessibility score: ${result.baselineScore} → ${result.score}. Gain: +${result.gain}.`
+  );
+
+  const cost = createElement(
+    "p",
+    `Repair cost: ${result.cost} / ${result.budget} units.`
+  );
+
+  const explanation = createElement(
+    "p",
+    "Manual simulation evaluates the selected repairs without running automatic optimization."
+  );
+
+  whyThisWins.append(
+    summary,
+    impact,
+    cost,
+    explanation
+  );
+}
+
+
+/* ========================================
+   UPDATE DASHBOARD
+======================================== */
 
 function updateDashboard(budget) {
   try {
-    const result = optimizeRepairs(budget);
 
+    // Determine active simulation mode
+    const isManual = simulationMode.value === "manual";
+
+    // Run selected simulation
+    const result = isManual
+      ? getManualResult(budget)
+      : optimizeRepairs(budget);
+
+    // Update scorecards
     baselineScore.textContent = result.baselineScore;
     optimizedScore.textContent = result.score;
     scoreGain.textContent = `+${result.gain}`;
     repairCost.textContent = result.cost;
     feasibleCount.textContent = result.feasibleCount;
 
+    // Update headings
+    repairSectionTitle.textContent = isManual
+      ? "Selected Repairs"
+      : "Recommended Repairs";
+
+    explanationTitle.textContent = isManual
+      ? "Manual Scenario Analysis"
+      : "Why This Solution?";
+
+    // Render result sections
     renderRepairs(result.repairs);
     renderJourneys(result.journeyResults);
-    renderExplanation(result);
 
-    // NEW: Update campus map
+    if (isManual) {
+      renderManualExplanation(result);
+    } else {
+      renderExplanation(result);
+    }
+
+    // Update SVG campus graph
     drawCampusGraph(result.repairs);
 
-    appStatus.textContent =
-      `Optimization successful for budget ${budget}.`;
+    // Check budget feasibility
+    const overBudget =
+      isManual && result.cost > budget;
+
+    if (overBudget) {
+      appStatus.textContent =
+        `Over budget by ${result.cost - budget} units.`;
+    } else {
+      appStatus.textContent = isManual
+        ? "Manual simulation updated successfully."
+        : "Optimization completed successfully.";
+    }
+
+    appStatus.classList.toggle(
+      "status-warning",
+      overBudget
+    );
 
   } catch (error) {
     appStatus.textContent = `Error: ${error.message}`;
@@ -224,6 +364,31 @@ optimizationForm.addEventListener("submit", (event) => {
   event.preventDefault();
   applyBudget(budgetNumber.value);
 });
+
+
+/* ========================================
+   SIMULATION MODE EVENTS
+======================================== */
+
+// Switch between Auto and Manual mode
+simulationMode.addEventListener("change", () => {
+
+  const isManual = simulationMode.value === "manual";
+
+  manualRepairControls.hidden = !isManual;
+
+  applyBudget(budgetNumber.value);
+});
+
+
+// Recalculate whenever repair checkbox changes
+for (const checkbox of repairCheckboxes) {
+
+  checkbox.addEventListener("change", () => {
+    applyBudget(budgetNumber.value);
+  });
+}
+
 
 
 // 11. Initialize dashboard

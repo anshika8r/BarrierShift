@@ -49,6 +49,46 @@
 
       <form id="optimizationForm">
 
+        
+<!-- SIMULATION MODE -->
+<label for="simulationMode">Simulation Mode</label>
+
+      <select id="simulationMode">
+        <option value="auto">Auto Optimize</option>
+        <option value="manual">Manual Simulation</option>
+      </select>
+
+      <!-- MANUAL REPAIR SELECTION -->
+      <fieldset id="manualRepairControls" hidden>
+        <legend>Select Campus Repairs</legend>
+
+        <label>
+          <input type="checkbox" name="manualRepair" value="R1">
+          R1 — J–K (3 units)
+        </label>
+
+        <label>
+          <input type="checkbox" name="manualRepair" value="R2">
+          R2 — K–A (3 units)
+        </label>
+
+        <label>
+          <input type="checkbox" name="manualRepair" value="R3">
+          R3 — J–M (4 units)
+        </label>
+
+        <label>
+          <input type="checkbox" name="manualRepair" value="R4">
+          R4 — C–L (7 units)
+        </label>
+
+        <label>
+          <input type="checkbox" name="manualRepair" value="R5">
+          R5 — H–C (1 unit)
+        </label>
+      </fieldset>
+
+
         <label for="budgetRange">
           Available Budget
         </label>
@@ -154,7 +194,7 @@
     <!-- RECOMMENDATIONS -->
     <section class="panel">
 
-      <h2>Recommended Repairs</h2>
+      <h2 id="repairSectionTitle">Recommended Repairs</h2>
 
       <div id="selectedRepairs" aria-live="polite">
         <p>Run optimization to view recommendations.</p>
@@ -201,7 +241,7 @@
     <!-- EXPLANATION -->
     <section class="panel explanation-panel">
 
-      <h2>Why This Solution?</h2>
+      <h2 id="explanationTitle">Why This Solution?</h2>
 
       <div id="whyThisWins">
         <p>
