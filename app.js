@@ -1,38 +1,38 @@
 
-import { buildGraph } from "./graph.js";
-import { scoreGraph } from "./scoring.js";
+import { generateRepairSets } from "./optimizer.js";
 
-// Define test scenarios
-const tests = [
-  { repairs: [], expected: 2 },
-  { repairs: ["R3"], expected: 7 },
-  { repairs: ["R1", "R2"], expected: 22 },
-  { repairs: ["R4"], expected: 22 },
-  { repairs: ["R5"], expected: 2 },
-  { repairs: ["R1", "R2", "R3"], expected: 27 }
-];
+// Generate all repair combinations
+const combinations = generateRepairSets();
 
-// Test weighted accessibility scores
-for (const test of tests) {
+console.log("=== REPAIR COMBINATIONS ===");
 
-  const graph = buildGraph(test.repairs);
-  const result = scoreGraph(graph);
+console.log("Total combinations:", combinations.length);
 
-  console.log(
-    `Repairs: ${test.repairs.join(", ") || "None"}`,
-    `Score: ${result.score}/27`
-  );
+console.table(
+  combinations.map((repairs, index) => ({
+    number: index + 1,
+    repairs: repairs.join(" + ") || "None"
+  }))
+);
 
-  if (result.score !== test.expected) {
-    throw new Error(
-      `Score mismatch for ${test.repairs.join(", ") || "None"}`
-    );
-  }
+// Automated tests
+if (combinations.length !== 32) {
+  throw new Error("Expected exactly 32 combinations");
 }
 
-console.log("All 6 scoring tests passed!");
+const uniqueCombinations = new Set(
+  combinations.map(repairs => [...repairs].sort().join(","))
+);
 
-// Inspect detailed journey results
-const graph = buildGraph(["R1", "R2"]);
+if (uniqueCombinations.size !== 32) {
+  throw new Error("Duplicate repair combinations detected");
+}
 
-console.table(scoreGraph(graph).journeyResults);
+if (
+  !combinations.some(repairs => repairs.length === 0) ||
+  !combinations.some(repairs => repairs.length === 5)
+) {
+  throw new Error("Missing empty or complete repair set");
+}
+
+console.log("All combination generator tests passed!");
