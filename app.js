@@ -1,42 +1,38 @@
 
-import { buildGraph, isReachable } from "./graph.js";
+import { buildGraph } from "./graph.js";
+import { scoreGraph } from "./scoring.js";
 
-// Original campus network
-const baselineGraph = buildGraph([]);
-
-// Simulate R1 + R2 repairs
-const repairedGraph = buildGraph(["R1", "R2"]);
-
-// Baseline tests
-console.log("=== BASELINE TESTS ===");
-
-console.log("H → C:", isReachable(baselineGraph, "H", "C"));
-console.log("H → A:", isReachable(baselineGraph, "H", "A"));
-console.log("H → M:", isReachable(baselineGraph, "H", "M"));
-
-// Repaired graph tests
-console.log("=== AFTER R1 + R2 ===");
-
-console.log("H → A:", isReachable(repairedGraph, "H", "A"));
-console.log("H → L:", isReachable(repairedGraph, "H", "L"));
-console.log("H → M:", isReachable(repairedGraph, "H", "M"));
-
-// Automated checks
+// Define test scenarios
 const tests = [
-  [baselineGraph, "H", "C", true],
-  [baselineGraph, "H", "A", false],
-  [baselineGraph, "H", "M", false],
-  [repairedGraph, "H", "A", true],
-  [repairedGraph, "H", "L", true],
-  [repairedGraph, "H", "M", false]
+  { repairs: [], expected: 2 },
+  { repairs: ["R3"], expected: 7 },
+  { repairs: ["R1", "R2"], expected: 22 },
+  { repairs: ["R4"], expected: 22 },
+  { repairs: ["R5"], expected: 2 },
+  { repairs: ["R1", "R2", "R3"], expected: 27 }
 ];
 
-for (const [graph, start, end, expected] of tests) {
-  const actual = isReachable(graph, start, end);
+// Test weighted accessibility scores
+for (const test of tests) {
 
-  if (actual !== expected) {
-    throw new Error(`BFS test failed: ${start} → ${end}`);
+  const graph = buildGraph(test.repairs);
+  const result = scoreGraph(graph);
+
+  console.log(
+    `Repairs: ${test.repairs.join(", ") || "None"}`,
+    `Score: ${result.score}/27`
+  );
+
+  if (result.score !== test.expected) {
+    throw new Error(
+      `Score mismatch for ${test.repairs.join(", ") || "None"}`
+    );
   }
 }
 
-console.log("All 6 BFS tests passed!");
+console.log("All 6 scoring tests passed!");
+
+// Inspect detailed journey results
+const graph = buildGraph(["R1", "R2"]);
+
+console.table(scoreGraph(graph).journeyResults);
