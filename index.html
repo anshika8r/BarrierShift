@@ -1,22 +1,231 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BarrierShift</title>
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <meta name="description"
+        content="BarrierShift campus accessibility repair planner">
+
+  <title>BarrierShift | Accessibility Planner</title>
+
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./app.js"></script>
 </head>
+
 <body>
-  <header>
-    <h1>BarrierShift</h1>
-    <p>From Barriers to Better Access</p>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="brand">
+      <h1>BarrierShift</h1>
+      <p>From Barriers to Better Access</p>
+    </div>
+
+    <span class="header-tag">Team KOYA</span>
   </header>
 
-  <main>
-    <h2>Campus Accessibility Planner</h2>
-    <p>Budget-aware infrastructure repair optimization.</p>
+  <main class="dashboard">
+
+    <!-- HERO -->
+    <section class="hero">
+      <p class="eyebrow">CAMPUS ACCESSIBILITY PLANNER</p>
+
+      <h2>Make Every Repair Count.</h2>
+
+      <p>
+        Optimize campus accessibility improvements
+        within a limited infrastructure budget.
+      </p>
+    </section>
+
+
+    <!-- BUDGET CONTROLS -->
+    <section class="panel controls-panel">
+      <h2>Repair Budget</h2>
+
+      <form id="optimizationForm">
+
+        <label for="budgetRange">
+          Available Budget
+        </label>
+
+        <output id="budgetOutput" for="budgetRange">
+          6 units
+        </output>
+
+        <input
+          type="range"
+          id="budgetRange"
+          min="0"
+          max="15"
+          value="6"
+          step="1"
+        >
+
+        <label for="budgetNumber">
+          Enter Budget
+        </label>
+
+        <input
+          type="number"
+          id="budgetNumber"
+          min="0"
+          step="1"
+          value="6"
+        >
+
+        <button type="submit" id="optimizeButton">
+          Find Optimal Repairs
+        </button>
+
+      </form>
+    </section>
+
+
+    <!-- STATISTICS -->
+    <section class="stats-grid">
+
+      <article class="stat-card">
+        <h3>Baseline Score</h3>
+        <p id="baselineScore">2</p>
+        <span>Out of 27</span>
+      </article>
+
+      <article class="stat-card">
+        <h3>Optimized Score</h3>
+        <p id="optimizedScore">—</p>
+        <span>Out of 27</span>
+      </article>
+
+      <article class="stat-card">
+        <h3>Score Improvement</h3>
+        <p id="scoreGain">—</p>
+        <span>Weighted Points</span>
+      </article>
+
+      <article class="stat-card">
+        <h3>Total Repair Cost</h3>
+        <p id="repairCost">—</p>
+        <span>Simulated Units</span>
+      </article>
+
+    </section>
+
+
+    <!-- CAMPUS NETWORK -->
+    <section class="panel map-panel">
+
+      <h2>Campus Connectivity Network</h2>
+
+      <p>
+        Visualize usable, blocked and repaired pathways.
+      </p>
+
+      <div class="map-container">
+
+        <svg
+          id="campusMap"
+          viewBox="0 0 800 440"
+          role="img"
+          aria-label="Campus pathway connectivity network"
+        >
+
+          <!-- Rendered by JavaScript later -->
+          <g id="pathLayer"></g>
+          <g id="nodeLayer"></g>
+
+        </svg>
+
+      </div>
+
+      <div class="map-legend">
+        <span>Usable Path</span>
+        <span>Blocked Path</span>
+        <span>Repaired Path</span>
+      </div>
+
+    </section>
+
+
+    <!-- RECOMMENDATIONS -->
+    <section class="panel">
+
+      <h2>Recommended Repairs</h2>
+
+      <div id="selectedRepairs" aria-live="polite">
+        <p>Run optimization to view recommendations.</p>
+      </div>
+
+      <p>
+        Affordable combinations:
+        <strong id="feasibleCount">—</strong>
+      </p>
+
+    </section>
+
+
+    <!-- PRIORITY JOURNEYS -->
+    <section class="panel">
+
+      <h2>Priority Journey Results</h2>
+
+      <div class="table-scroll">
+        <table>
+
+          <thead>
+            <tr>
+              <th scope="col">Journey</th>
+              <th scope="col">Weight</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="journeyResults">
+            <tr>
+              <td colspan="3">
+                Results will appear after optimization.
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+    </section>
+
+
+    <!-- EXPLANATION -->
+    <section class="panel explanation-panel">
+
+      <h2>Why This Solution?</h2>
+
+      <div id="whyThisWins">
+        <p>
+          Optimization explanations will appear here.
+        </p>
+      </div>
+
+    </section>
+
+    <p id="appStatus" role="status" aria-live="polite">
+      Dashboard structure initialized.
+    </p>
+
   </main>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>BarrierShift | Team KOYA</p>
+    <p>
+      Illustrative campus model.
+      Not a real-world accessibility certification.
+    </p>
+  </footer>
+
 </body>
 </html>
