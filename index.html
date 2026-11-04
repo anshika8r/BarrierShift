@@ -1,14 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description"
-        content="BarrierShift campus accessibility repair planner">
+  <meta name="description" content="BarrierShift campus accessibility repair planner">
 
   <title>BarrierShift | Accessibility Planner</title>
 
@@ -49,44 +46,44 @@
 
       <form id="optimizationForm">
 
-        
-<!-- SIMULATION MODE -->
-<label for="simulationMode">Simulation Mode</label>
 
-      <select id="simulationMode">
-        <option value="auto">Auto Optimize</option>
-        <option value="manual">Manual Simulation</option>
-      </select>
+        <!-- SIMULATION MODE -->
+        <label for="simulationMode">Simulation Mode</label>
 
-      <!-- MANUAL REPAIR SELECTION -->
-      <fieldset id="manualRepairControls" hidden>
-        <legend>Select Campus Repairs</legend>
+        <select id="simulationMode">
+          <option value="auto">Auto Optimize</option>
+          <option value="manual">Manual Simulation</option>
+        </select>
 
-        <label>
-          <input type="checkbox" name="manualRepair" value="R1">
-          R1 — J–K (3 units)
-        </label>
+        <!-- MANUAL REPAIR SELECTION -->
+        <fieldset id="manualRepairControls" hidden>
+          <legend>Select Campus Repairs</legend>
 
-        <label>
-          <input type="checkbox" name="manualRepair" value="R2">
-          R2 — K–A (3 units)
-        </label>
+          <label>
+            <input type="checkbox" name="manualRepair" value="R1">
+            R1 — J–K (3 units)
+          </label>
 
-        <label>
-          <input type="checkbox" name="manualRepair" value="R3">
-          R3 — J–M (4 units)
-        </label>
+          <label>
+            <input type="checkbox" name="manualRepair" value="R2">
+            R2 — K–A (3 units)
+          </label>
 
-        <label>
-          <input type="checkbox" name="manualRepair" value="R4">
-          R4 — C–L (7 units)
-        </label>
+          <label>
+            <input type="checkbox" name="manualRepair" value="R3">
+            R3 — J–M (4 units)
+          </label>
 
-        <label>
-          <input type="checkbox" name="manualRepair" value="R5">
-          R5 — H–C (1 unit)
-        </label>
-      </fieldset>
+          <label>
+            <input type="checkbox" name="manualRepair" value="R4">
+            R4 — C–L (7 units)
+          </label>
+
+          <label>
+            <input type="checkbox" name="manualRepair" value="R5">
+            R5 — H–C (1 unit)
+          </label>
+        </fieldset>
 
 
         <label for="budgetRange">
@@ -97,26 +94,13 @@
           6 units
         </output>
 
-        <input
-          type="range"
-          id="budgetRange"
-          min="0"
-          max="15"
-          value="6"
-          step="1"
-        >
+        <input type="range" id="budgetRange" min="0" max="15" value="6" step="1">
 
         <label for="budgetNumber">
           Enter Budget
         </label>
 
-        <input
-          type="number"
-          id="budgetNumber"
-          min="0"
-          step="1"
-          value="6"
-        >
+        <input type="number" id="budgetNumber" min="0" step="1" value="6">
 
         <button type="submit" id="optimizeButton">
           Find Optimal Repairs
@@ -167,12 +151,7 @@
 
       <div class="map-container">
 
-        <svg
-          id="campusMap"
-          viewBox="0 0 800 440"
-          role="img"
-          aria-label="Campus pathway connectivity network"
-        >
+        <svg id="campusMap" viewBox="0 0 800 440" role="img" aria-label="Campus pathway connectivity network">
 
           <!-- Rendered by JavaScript later -->
           <g id="pathLayer"></g>
@@ -238,6 +217,43 @@
     </section>
 
 
+    <!-- BEFORE / AFTER COMPARISON -->
+    <section class="panel comparison-panel">
+
+      <h2>Before vs After Accessibility</h2>
+
+      <p>
+        Compare baseline campus connectivity with
+        the selected repair scenario.
+      </p>
+
+      <div class="table-scroll">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Priority Journey</th>
+              <th>Weight</th>
+              <th>Before</th>
+              <th>After</th>
+            </tr>
+          </thead>
+
+          <tbody id="comparisonRows">
+            <tr>
+              <td colspan="4">
+                Run a simulation to see results.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="comparison-summary" id="comparisonSummary" aria-live="polite">
+        Waiting for simulation...
+      </div>
+
+    </section>
+
     <!-- EXPLANATION -->
     <section class="panel explanation-panel">
 
@@ -259,12 +275,13 @@
 
 
   <!-- FOOTER -->
- 
-<footer class="site-footer">
-  <p>BarrierShift | Team KOYA</p>
-  <p>Illustrative campus model.</p>
-</footer>
+
+  <footer class="site-footer">
+    <p>BarrierShift | Team KOYA</p>
+    <p>Illustrative campus model.</p>
+  </footer>
 
 
 </body>
+
 </html>

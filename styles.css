@@ -666,3 +666,42 @@ tbody tr:hover {
   color: var(--warning);
   border-color: var(--warning);
 }
+
+/* ========================================
+   BEFORE / AFTER COMPARISON
+======================================== */
+
+.comparison-panel {
+  border-top: 2px solid var(--primary);
+}
+
+.comparison-table {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.comparison-table th {
+  background: var(--surface-light);
+}
+
+.comparison-table td {
+  padding: 16px 14px;
+}
+
+.status-new {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.comparison-summary {
+  margin-top: 20px;
+  padding: 18px;
+
+  background: rgba(66, 223, 181, 0.08);
+  border: 1px solid var(--primary-dark);
+  border-radius: 12px;
+
+  color: var(--primary);
+  font-size: 15px;
+  font-weight: 700;
+}

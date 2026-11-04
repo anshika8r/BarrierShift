@@ -49,7 +49,11 @@ const explanationTitle =
 
 const repairCheckboxes =
   document.querySelectorAll('input[name="manualRepair"]');
+const comparisonRows =
+  document.getElementById("comparisonRows");
 
+const comparisonSummary =
+  document.getElementById("comparisonSummary");
 
 
 // 2. Create HTML elements safely
@@ -247,6 +251,149 @@ function renderManualExplanation(result) {
 
 
 /* ========================================
+   BEFORE / AFTER JOURNEY COMPARISON
+======================================== */
+
+function renderJourneyComparison(result) {
+
+  // Original campus journey results
+  const baselineJourneys = scoreGraph(
+    buildGraph([])
+  ).journeyResults;
+
+  comparisonRows.replaceChildren();
+
+  let beforeCount = 0;
+  let afterCount = 0;
+
+  const newlyReachable = [];
+
+  for (const journey of result.journeyResults) {
+
+    // Find matching baseline journey
+    const original = baselineJourneys.find(
+      item =>
+        item.from === journey.from &&
+        item.to === journey.to
+    );
+
+    const before = original.reachable;
+    const after = journey.reachable;
+
+    if (before) beforeCount++;
+    if (after) afterCount++;
+
+    const journeyName =
+      `${LOCATIONS[journey.from]} → ${LOCATIONS[journey.to]}`;
+
+    // Track newly restored journeys
+    if (!before && after) {
+      newlyReachable.push(journeyName);
+    }
+
+    // Create table row
+    const row = document.createElement("tr");
+
+    const routeCell = createElement(
+      "td",
+      journeyName
+    );
+
+    const weightCell = createElement(
+      "td",
+      journey.weight
+    );
+
+    const beforeCell = createElement(
+      "td",
+      before ? "Reachable" : "Blocked",
+      before ? "status-reachable" : "status-blocked"
+    );
+
+    const afterCell = createElement(
+      "td",
+      after
+        ? (before ? "Reachable" : "Newly Reachable")
+        : "Blocked",
+      after
+        ? (before ? "status-reachable" : "status-new")
+        : "status-blocked"
+    );
+
+    row.append(
+      routeCell,
+      weightCell,
+      beforeCell,
+      afterCell
+    );
+
+    comparisonRows.append(row);
+  }
+
+  // Update summary
+  comparisonSummary.textContent =
+    `${beforeCount}/${result.journeyResults.length} → ` +
+    `${afterCount}/${result.journeyResults.length} reachable journeys | ` +
+    `${newlyReachable.length} newly reachable | ` +
+    `+${result.gain} weighted points`;
+
+  return newlyReachable;
+}
+
+
+/* ========================================
+   ADD DETAILED REPAIR EXPLANATION
+======================================== */
+
+function renderDetailedExplanation(
+  result,
+  isManual,
+  newlyReachable
+) {
+
+  // Explain newly accessible journeys
+  const journeyText = newlyReachable.length
+    ? newlyReachable.join(", ")
+    : "No additional priority journeys";
+
+  whyThisWins.append(
+    createElement(
+      "p",
+      `Newly reachable journeys: ${journeyText}.`
+    )
+  );
+
+  // Explain automatic optimization
+  if (!isManual) {
+
+    whyThisWins.append(
+      createElement(
+        "p",
+        "Selection rules: highest weighted score, " +
+        "then lowest repair cost, then repair ID order."
+      )
+    );
+
+    // Demonstrate cost-based tie-breaking
+    if (
+      result.budget >= 7 &&
+      result.score === 22 &&
+      result.repairs.join(",") === "R1,R2"
+    ) {
+
+      whyThisWins.append(
+        createElement(
+          "p",
+          "Why not R4? R4 alone scores 22 at cost 7. " +
+          "R1 + R2 also scores 22 but costs only 6."
+        )
+      );
+    }
+  }
+}
+
+
+/* ========================================
    UPDATE DASHBOARD
 ======================================== */
 
@@ -286,6 +433,16 @@ function updateDashboard(budget) {
     } else {
       renderExplanation(result);
     }
+    // Update before/after comparison
+    const newlyReachable =
+      renderJourneyComparison(result);
+
+    // Add detailed explanation
+    renderDetailedExplanation(
+      result,
+      isManual,
+      newlyReachable
+    );
 
     // Update SVG campus graph
     drawCampusGraph(result.repairs);
