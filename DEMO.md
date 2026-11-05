@@ -1,5 +1,9 @@
 
-# BarrierShift — Hackathon Demo Guide
+# BarrierShift — Demo Guide
+# Project: BarrierShift — From Barriers to Better Access
+# Event: Beyond Hack 2.0 — Campus # Innovation & Student Life
+# Team: Team KOYA
+# Repository: https://github.com/anshika8r/BarrierShift
 
 ## Project
 
