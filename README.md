@@ -8,6 +8,7 @@
 **Team:** Team KOYA  
 **Institution:** SRM Institute of Science and Technology  
 **Repository:** https://github.com/anshika8r/BarrierShift  
+**Live Demo:** https://barriershift.vercel.app 
 **Status:** Functional, browser-based proof of concept with an illustrative dataset
 
 > **Important scope note:** BarrierShift models *potential connectivity improvements* in a fictional campus network. It is not an audited accessibility map, a route-navigation service, or a substitute for on-site accessibility and safety assessments.
